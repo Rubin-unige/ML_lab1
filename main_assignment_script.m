@@ -5,13 +5,15 @@
 % Read the weather data from text file converted into integers by 'weather_data_processing.m' script
 processedWeatherData = readmatrix('processed_weather_data.txt');
 
-% Shuffle the processed matrix so everytime the training and test data sets are different
+% Shuffle the processed matrix so everytime the training and test datasets are different
 rng("shuffle");
 n_row = size(processedWeatherData, 1);
 indices = randperm(n_row);
 
 % Split the processed dataset into training data and test data
-trainSize = 10; % this can be made dynamic
+% this can be made dynamic
+% I was thinking of using 70% for training and rest for test, but task requires 10
+trainSize = 10; 
 trainingData = processedWeatherData(indices(1:trainSize), :);
 testData = processedWeatherData(indices((trainSize + 1):end), :);
 

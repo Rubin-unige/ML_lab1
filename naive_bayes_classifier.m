@@ -9,7 +9,7 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
     [n_train, d_train] = size(trainingData);
     [m_test, c_test] = size(testData);
     % Check number of columns
-    if ~(c_test == d_train || c_test == d_train - 1)
+    if ~(c_test == d_train || c_test == (d_train - 1))
         error('Check number of columns in training data.')
     end
     % Check for invalid data entries
@@ -31,7 +31,9 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
 
     % Calculate likelihoods without laplace smoothing
     numFeatures = size(trainingFeatures, 2); % Number of features
-    likelihoods = cell(length(classLabels), numFeatures); % Initialize likelihoods as cell array
+    % Initialize likelihoods as cell array
+    % cell so that it can hold all the possible feature values
+    likelihoods = cell(length(classLabels), numFeatures); 
     for i = 1:length(classLabels)
         classData = trainingFeatures(trainingClass == classLabels(i), :);
         for j = 1:numFeatures % For each feature
@@ -44,6 +46,7 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
             end 
         end
     end
+    disp(likelihoods);
 
     % Calculate prosterior probabilities and predictions
     predictions = zeros(m_test, 1); % Initialize predictions vector
