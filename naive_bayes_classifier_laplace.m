@@ -33,7 +33,7 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
     numFeatures = size(trainingFeatures, 2); % Number of features
     likelihoods = cell(length(classLabels), numFeatures); % Initialize likelihoods as cell array
     % laplace smoothing alpha variable
-    alphaLaplace = 0.8;
+    alphaLaplace = 1;
     for i = 1:length(classLabels)
         classData = trainingFeatures(trainingClass == classLabels(i), :);
         for j = 1:numFeatures % For each feature            
@@ -41,7 +41,7 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
             likelihoods{i, j} = zeros(numLevels(j), 1); % Adjust size according to numLevels
             for v = 1:numLevels(j) % Now iterating through numLevels
                 count_value = sum(classData(:, j) == v); 
-                likelihood = (count_value + alphaLaplace) / (size(classData, 1) +  (alphaLaplace * numLevels(j))); % Laplace smoothing
+                likelihood = (count_value + alphaLaplace)/(size(classData, 1)+(alphaLaplace*numLevels(j))); % Laplace smoothing
                 likelihoods{i, j}(v) = likelihood; 
             end
         end

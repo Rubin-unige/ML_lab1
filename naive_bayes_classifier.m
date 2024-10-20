@@ -28,6 +28,11 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
         count_class_occurance = sum(trainingClass == classLabels(i)); % Count how many times the class appears
         prior(i) = count_class_occurance / n_train; % Calculate prior probability 
     end
+    % Create a table for prior probabilities
+    priorTable = table(classLabels, prior, 'VariableNames', {'Class', 'PriorProbability'});
+    disp('Prior Probabilities Table:');
+    disp(priorTable);
+
 
     % Calculate likelihoods without laplace smoothing
     numFeatures = size(trainingFeatures, 2); % Number of features
@@ -46,7 +51,11 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
             end 
         end
     end
-    disp(likelihoods);
+    % Example for the first feature
+    likelihoodTableFeature1 = array2table(likelihoods{1, 1}, 'VariableNames', {'Feature1_Likelihood'});
+    disp('Likelihood Table for Feature 1 (Class 1):');
+    disp(likelihoodTableFeature1);
+
 
     % Calculate prosterior probabilities and predictions
     predictions = zeros(m_test, 1); % Initialize predictions vector
@@ -72,6 +81,10 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
         [~, predictedClassIndex] = max(posterior); 
         predictions(i) = classLabels(predictedClassIndex); % Store the predicted class
     end
+    % Create a table for posterior probabilities for each test instance
+    posteriorTable = array2table(posterior, 'VariableNames', {'Posterior_Class1', 'Posterior_Class2'});
+    disp('Posterior Probabilities Table:');
+    disp(posteriorTable);
 
     % Compute error rate if the test set has the target column
     if c_test == d_train
