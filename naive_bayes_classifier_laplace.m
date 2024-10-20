@@ -3,7 +3,7 @@
 % Task 3: Make the classifier robust to missing data with Laplace (additive) smoothing
 
 % naive bayes classifier with laplace smoothing function
-function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_laplace(trainingData, testData, numLevels)
+function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_laplace(trainingData, testData, numLevels, alphaLaplace)
 
     % Check dimensions
     [n_train, d_train] = size(trainingData);
@@ -21,6 +21,8 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
     trainingFeatures = trainingData(:, 1:end-1);
     trainingClass = trainingData(:, end);
 
+    fprintf('\nNaive Bayes Classifier with Laplace smoothing\n');
+
     % Calculate prior probabilities
     classLabels = unique(trainingClass);
     prior = zeros(length(classLabels), 1); % Initialize prior probabilities matrix with zeros
@@ -29,11 +31,23 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
         prior(i) = count_class_occurance / n_train; % Calculate prior probability 
     end
 
+    % Display prior probabilities
+    fprintf('Prior Probabilities:\n');
+    fprintf('%-10s %-10s\n', 'Class', 'Probability');
+    fprintf('-------------------------\n');
+    for i = 1:length(classLabels)
+        fprintf('%-10d %-10.4f\n', classLabels(i), prior(i));
+    end
+
     % Calculate likelihoods with laplace smoothing
     numFeatures = size(trainingFeatures, 2); % Number of features
     likelihoods = cell(length(classLabels), numFeatures); % Initialize likelihoods as cell array
-    % laplace smoothing alpha variable
-    alphaLaplace = 1;
+
+    % Display likelihoods
+    fprintf('\nLikelihoods:\n');
+    fprintf('%-10s %-10s %-10s %-10s\n', 'Class', 'Feature', 'Value', 'Likelihood');
+    fprintf('-----------------------------------------------------\n');
+
     for i = 1:length(classLabels)
         classData = trainingFeatures(trainingClass == classLabels(i), :);
         for j = 1:numFeatures % For each feature            
@@ -43,6 +57,7 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
                 count_value = sum(classData(:, j) == v); 
                 likelihood = (count_value + alphaLaplace)/(size(classData, 1)+(alphaLaplace*numLevels(j))); % Laplace smoothing
                 likelihoods{i, j}(v) = likelihood; 
+                fprintf('%-10d %-10d %-10d %-10.4f\n', classLabels(i), j, v, likelihood); % Print likelihood
             end
         end
     end
@@ -64,8 +79,14 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
                 end
             end
         end
-        disp('Posterior probabilities with laplace');
-        disp(posterior);
+
+        % Display posterior probabilities for the test instance
+        fprintf('\nTest Instance %d:\n', i);
+        fprintf('%-10s %-10s\n', 'Class', 'Posterior Probability');
+        fprintf('-----------------------------------\n');
+        for j = 1:length(classLabels)
+            fprintf('%-10d %-10.4f\n', classLabels(j), posterior(j));
+        end
     
         % Compare posterior probability and take higher probability
         [~, predictedClassIndex] = max(posterior); 

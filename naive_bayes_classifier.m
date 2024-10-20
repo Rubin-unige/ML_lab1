@@ -21,6 +21,8 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
     trainingFeatures = trainingData(:, 1:end-1);
     trainingClass = trainingData(:, end);
 
+    fprintf('\nNaive Bayes Classifier without Laplace smoothing\n');
+
     % Calculate prior probabilities
     classLabels = unique(trainingClass);
     prior = zeros(length(classLabels), 1); % Initialize prior probabilities matrix with zeros
@@ -28,17 +30,25 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
         count_class_occurance = sum(trainingClass == classLabels(i)); % Count how many times the class appears
         prior(i) = count_class_occurance / n_train; % Calculate prior probability 
     end
-    % Create a table for prior probabilities
-    priorTable = table(classLabels, prior, 'VariableNames', {'Class', 'PriorProbability'});
-    disp('Prior Probabilities Table:');
-    disp(priorTable);
-
+     % Display prior probabilities
+    fprintf('Prior Probabilities:\n');
+    fprintf('%-10s %-10s\n', 'Class', 'Probability');
+    fprintf('-------------------------\n');
+    for i = 1:length(classLabels)
+        fprintf('%-10d %-10.4f\n', classLabels(i), prior(i));
+    end
 
     % Calculate likelihoods without laplace smoothing
     numFeatures = size(trainingFeatures, 2); % Number of features
     % Initialize likelihoods as cell array
     % cell so that it can hold all the possible feature values
-    likelihoods = cell(length(classLabels), numFeatures); 
+    likelihoods = cell(length(classLabels), numFeatures);
+    
+    % Display likelihoods
+    fprintf('\nLikelihoods:\n');
+    fprintf('%-10s %-10s %-10s %-10s\n', 'Class', 'Feature', 'Value', 'Likelihood');
+    fprintf('-----------------------------------------------------\n');
+
     for i = 1:length(classLabels)
         classData = trainingFeatures(trainingClass == classLabels(i), :);
         for j = 1:numFeatures % For each feature
@@ -48,14 +58,10 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
                 count_value = sum(classData(:, j) == v); % Count occurrences of value v in class data
                 likelihood = count_value / size(classData, 1); % Calculate likelihood
                 likelihoods{i, j}(v) = likelihood; % Store likelihood in the corresponding index
+                fprintf('%-10d %-10d %-10d %-10.4f\n', classLabels(i), j, v, likelihood); % Print likelihood
             end 
         end
     end
-    % Example for the first feature
-    likelihoodTableFeature1 = array2table(likelihoods{1, 1}, 'VariableNames', {'Feature1_Likelihood'});
-    disp('Likelihood Table for Feature 1 (Class 1):');
-    disp(likelihoodTableFeature1);
-
 
     % Calculate prosterior probabilities and predictions
     predictions = zeros(m_test, 1); % Initialize predictions vector
@@ -74,17 +80,19 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
                 end
             end
         end
-        disp('Posterior probabilities without laplace');
-        disp(posterior);
+
+        % Display posterior probabilities for the test instance
+        fprintf('\nTest Instance %d:\n', i);
+        fprintf('%-10s %-10s\n', 'Class', 'Posterior Probability');
+        fprintf('-----------------------------------\n');
+        for j = 1:length(classLabels)
+            fprintf('%-10d %-10.4f\n', classLabels(j), posterior(j));
+        end
     
         % Compare posterior probability and take higher probability
         [~, predictedClassIndex] = max(posterior); 
         predictions(i) = classLabels(predictedClassIndex); % Store the predicted class
     end
-    % Create a table for posterior probabilities for each test instance
-    posteriorTable = array2table(posterior, 'VariableNames', {'Posterior_Class1', 'Posterior_Class2'});
-    disp('Posterior Probabilities Table:');
-    disp(posteriorTable);
 
     % Compute error rate if the test set has the target column
     if c_test == d_train
@@ -92,5 +100,5 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
         errorRate = sum(predictions ~= trueLabels) / m_test; % Calculate error rate
     else
         errorRate = NaN; % No error rate if no target column
-    end
+    end  
 end
