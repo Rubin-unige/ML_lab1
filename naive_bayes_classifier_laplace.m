@@ -38,7 +38,8 @@ function [predictions_laplace, errorRate_laplace] = naive_bayes_classifier_lapla
     for i = 1:length(classLabels)
         fprintf('%-10d %-10.4f\n', classLabels(i), prior(i));
     end
-
+    
+    fprintf('\nLaplace smoothing parameter alpha = %.2f\n', alphaLaplace);
     % Calculate likelihoods with laplace smoothing
     numFeatures = size(trainingFeatures, 2); % Number of features
     likelihoods = cell(length(classLabels), numFeatures); % Initialize likelihoods as cell array

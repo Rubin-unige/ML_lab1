@@ -11,11 +11,9 @@ n_row = size(processedWeatherData, 1);
 indices = randperm(n_row);
 
 % Split the processed dataset into training data and test data
-% this can be made dynamic
-% I was thinking of using 70% for training and rest for test, but task requires 10
 trainSize = 10; 
-trainingData = processedWeatherData(indices(1:trainSize), :);
-testData = processedWeatherData(indices((trainSize + 1):end), :);
+trainingData = processedWeatherData(indices(1:trainSize), :); % 10 for training 
+testData = processedWeatherData(indices((trainSize + 1):end), :); % rest for testing
 
 % Call naive bayes classifier without laplace smoothing function
 [predictions, errorRate] = naive_bayes_classifier(trainingData, testData);
@@ -34,9 +32,9 @@ numLevels = zeros(1, numFeatures); % Initialize the numLevel matrix
 for j = 1:numFeatures
     numLevels(j) = length(unique(processedWeatherData(:, j))); % Count unique values for each feature
 end
-alphaLaplace = 1; % Laplace Smoothing parameter, can be changed
+alphaLaplace = 1; % Laplace Smoothing parameter
 % Call naive bayes classifier with laplace smoothing function
-[predictions_laplace, errorRate_laplace] = naive_bayes_classifier_laplace(trainingData, testData, numLevels,alphaLaplace);
+[predictions_laplace, errorRate_laplace] = naive_bayes_classifier_laplace(trainingData, testData, numLevels, alphaLaplace);
 
 % Display the predictions and error rate with laplace smoothing
 disp('Predictions for Test Data with laplace smoothing:');

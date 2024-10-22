@@ -30,7 +30,7 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
         count_class_occurance = sum(trainingClass == classLabels(i)); % Count how many times the class appears
         prior(i) = count_class_occurance / n_train; % Calculate prior probability 
     end
-     % Display prior probabilities
+    % Display prior probabilities
     fprintf('Prior Probabilities:\n');
     fprintf('%-10s %-10s\n', 'Class', 'Probability');
     fprintf('-------------------------\n');
@@ -43,7 +43,7 @@ function [predictions, errorRate] = naive_bayes_classifier(trainingData, testDat
     % Initialize likelihoods as cell array
     % cell so that it can hold all the possible feature values
     likelihoods = cell(length(classLabels), numFeatures);
-    
+  
     % Display likelihoods
     fprintf('\nLikelihoods:\n');
     fprintf('%-10s %-10s %-10s %-10s\n', 'Class', 'Feature', 'Value', 'Likelihood');
